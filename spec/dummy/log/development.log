@@ -1,0 +1,2 @@
+  [1m[36mLibrary Load (0.2ms)[0m  [1mSELECT "libraries".* FROM "libraries"[0m
+SQLite3::SQLException: no such table: libraries: SELECT "libraries".* FROM "libraries"
