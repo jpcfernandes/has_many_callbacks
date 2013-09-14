@@ -1,4 +1,4 @@
 = has_many_callbacks
 
-= License
-This software is provided under the MIT License. See MIT-LICENSE file for details.
+=== License
+This software is provided under the MIT License. See MIT-LICENSE for details.
