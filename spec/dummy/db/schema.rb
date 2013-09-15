@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20130914171930) do
   create_table "books", force: true do |t|
     t.string   "title"
     t.string   "author"
-    t.integer  "page_count"
+    t.integer  "award_count"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 20130914171930) do
   create_table "libraries", force: true do |t|
     t.string   "name"
     t.integer  "book_count"
-    t.integer  "page_count"
+    t.integer  "award_count"
     t.integer  "inventory_count"
     t.datetime "created_at"
     t.datetime "updated_at"

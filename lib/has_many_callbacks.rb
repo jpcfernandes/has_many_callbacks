@@ -16,20 +16,20 @@ module HasManyCallbacks
             association = obj.class.reflect_on_association(:#{association.inverse_of.name})
             callback = association.inverse_of.options[:#{callback_name}]
             callback = lambda { |r| r.send(callback) } if callback.is_a?(Symbol)
-            parent_obj = obj.send(association.name).reload
-            callback[parent_obj] if parent_obj.present?
+            associated_obj = obj.send(association.name).reload
+
+            if associated_obj.present?
+              association.macro == :has_many ? associated_obj.each { |r| callback[r, self] } : callback[associated_obj, self]
+            end
           end
         }
       end
 
       hook_callback[:after_save] if options[:after_save].present?
       #hook_callback.call(:after_create, after_create_callback) if after_create_callback.present?
-
+      association
     end
   end
-
-  #included do
-  #end
 
   module ClassMethods
     def has_many(name, scope = nil, options = {}, &extension)
