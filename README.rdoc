@@ -1,3 +1,4 @@
-= HasManyCallbacks
+= has_many_callbacks
 
-This project rocks and uses MIT-LICENSE.
+=== License
+This software is provided under the MIT License. See MIT-LICENSE for details.
