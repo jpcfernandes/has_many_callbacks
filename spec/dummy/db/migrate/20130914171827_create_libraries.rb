@@ -4,6 +4,7 @@ class CreateLibraries < ActiveRecord::Migration
       t.string :name
       t.integer :book_count
       t.integer :page_count
+      t.integer :inventory_count
       t.timestamps
     end
   end

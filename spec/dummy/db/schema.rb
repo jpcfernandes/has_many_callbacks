@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(version: 20130914171930) do
     t.string   "name"
     t.integer  "book_count"
     t.integer  "page_count"
+    t.integer  "inventory_count"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

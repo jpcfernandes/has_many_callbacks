@@ -47,16 +47,16 @@ end
 
 Spork.each_run do
   # This code will be run each time you run your specs.
+  RSpec.configure do |config|
+    #I18n.backend.reload! # uncomment if I18n is used
+    Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+
+    # reloads factory settings
+    require 'factory_girl'
+    FactoryGirl.definition_file_paths = [ File.join(Rails.root, 'spec', 'factories') ]
+    FactoryGirl.find_definitions
+  end
 
 end
 
 
-RSpec.configure do |config|
-  #I18n.backend.reload! # uncomment if I18n is used
-  Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
-
-  # reloads factory settings
-  require 'factory_girl'
-  FactoryGirl.definition_file_paths = [ File.join(Rails.root, 'spec', 'factories') ]
-  FactoryGirl.find_definitions
-end

@@ -2,5 +2,6 @@
 
 FactoryGirl.define do
   factory :book do
+    title 'The Unbearable Lightness of Being'
   end
 end

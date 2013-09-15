@@ -2,5 +2,6 @@
 
 FactoryGirl.define do
   factory :library do
+    name 'National Library'
   end
 end
