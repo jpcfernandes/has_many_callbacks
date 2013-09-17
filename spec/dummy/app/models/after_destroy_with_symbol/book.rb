@@ -4,6 +4,5 @@ class AfterDestroyWithSymbol::Book < Book
 
   has_many :libraries,
            :class_name => 'AfterDestroyWithSymbol::Library',
-           :inverse_of => :books,
            :through => :book_inventory_entries
 end

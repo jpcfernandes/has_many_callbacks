@@ -65,4 +65,8 @@ describe HasManyCallbacks do
 
   it_behaves_like 'executes after destroy callback',
                   :when_calling => AfterDestroyWithSymbol
+
+  it_behaves_like 'executes after destroy callback',
+                  :when_calling => AfterDestroyWithProc
+
 end

@@ -10,10 +10,6 @@ class AfterDestroyWithSymbol::Library < ::Library
            :class_name => 'AfterDestroyWithSymbol::Book',
            :after_destroy => :update_award_count
 
-  after_destroy do
-    debugger
-  end
-
   private
 
   def update_inventory_count(book_inventory_entry)

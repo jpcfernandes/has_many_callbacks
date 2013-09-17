@@ -1,4 +1,43 @@
 = has_many_callbacks
+Adds additional callback hooks to ActiveRecord has_many relations.
+
+=== Motivation
+Callback hooks are a common pattern in software development, used when modeling event driven
+behavior.
+
+Rails has_many relations provide hooks to child events, but they have several shortcomings. This
+gem provides additional callbacks, that are built on ActiveRecord model callbacks and work
+in the same way.
+
+The main goal is ensuring the code that expresses the relation parent behavior when handling events
+triggered by child objects is kept in the parent code base, where it belongs. If the parent
+has a lot of relations, this prevents that class' code to be scattered accross all the child
+class definitions.
+
+=== Example
+Consider the following classes:
+
+class TodoList
+  # name, completed
+  has_many :tasks
+end
+
+class Task
+  # name, completed
+  belongs_to :todo_list
+end
+
+Imagine that a To-Do list is completed if it's not empty and all the tasks in it get are completed.
+
+class TodoList
+  has_many :tasks,
+           :after_save => lambda { |todo_list, task|
+             todo_list.completed = !task.completed ? false : todo_list.tasks.map(&:completed).inject(&:&)
+             todo_list.save! if todo_list.completed_changed?
+           }
+
+end
+
 
 === License
 This software is provided under the MIT License. See MIT-LICENSE for details.
