@@ -4,28 +4,37 @@ module HasManyCallbacks
 
   class HasManyWithChildCallbacksBuilder < ActiveRecord::Associations::Builder::HasMany
     def valid_options
-      super + [ :after_save ]
+      super + [ :after_save, :after_destroy ]
     end
 
     def build
       association = super
 
       hook_callback = lambda do |callback_name|
-        association.klass.instance_eval %{
+        code = %{
           #{callback_name} do |obj|
             association = obj.class.reflect_on_association(:#{association.inverse_of.name})
-            callback = association.inverse_of.options[:#{callback_name}]
-            callback = lambda { |r| r.send(callback) } if callback.is_a?(Symbol)
-            associated_obj = obj.send(association.name).reload
-
+            callback_option = association.inverse_of.options[:#{callback_name}]
+            callback = callback_option.is_a?(Symbol) ?
+              lambda { |r, o| r.send(callback_option, o) } : callback_option
+            associated_obj = obj.send(association.name)
             if associated_obj.present?
-              association.macro == :has_many ? associated_obj.each { |r| callback[r, self] } : callback[associated_obj, self]
+              association.macro == :has_many ?
+                associated_obj.each { |r| callback[r, self] } : callback[associated_obj, self]
             end
           end
         }
+        association.klass.instance_eval code
       end
 
-      hook_callback[:after_save] if options[:after_save].present?
+      [:after_save, :after_destroy].each do |callback|
+        if options[callback].present?
+          hook_callback[callback]
+          #puts "#{model.to_s}: hooking #{callback} on #{association.try(:name)}"
+        end
+      end
+
+
       #hook_callback.call(:after_create, after_create_callback) if after_create_callback.present?
       association
     end
