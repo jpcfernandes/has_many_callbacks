@@ -17,26 +17,26 @@ class definitions.
 === Example
 Consider the following classes:
 
-class TodoList
-  # name, completed
-  has_many :tasks
-end
+  class TodoList
+    # name, completed
+    has_many :tasks
+  end
 
-class Task
-  # name, completed
-  belongs_to :todo_list
-end
+  class Task
+    # name, completed
+    belongs_to :todo_list
+  end
 
 Imagine that a To-Do list is completed if it's not empty and all the tasks in it get are completed.
 
-class TodoList
-  has_many :tasks,
-           :after_save => lambda { |todo_list, task|
-             todo_list.completed = !task.completed ? false : todo_list.tasks.map(&:completed).inject(&:&)
-             todo_list.save! if todo_list.completed_changed?
-           }
-
-end
+  class TodoList
+    has_many :tasks,
+             :after_save => lambda { |todo_list, task|
+               todo_list.completed = !task.completed ? false : todo_list.tasks.map(&:completed).inject(&:&)
+               todo_list.save! if todo_list.completed_changed?
+             }
+  
+  end
 
 
 === License
