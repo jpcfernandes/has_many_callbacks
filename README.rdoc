@@ -11,7 +11,7 @@ in the same way.
 
 The main goal is ensuring the code that expresses the relation parent behavior when handling events
 triggered by child objects is kept in the parent code base, where it belongs. If the parent
-has a lot of relations, this prevents that class' code to be scattered accross all the child
+has a lot of relations, this prevents that class' code to be scattered across all the child
 class definitions.
 
 === Example
