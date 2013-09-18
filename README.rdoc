@@ -27,7 +27,7 @@ Consider the following classes:
     belongs_to :todo_list
   end
 
-Imagine that you want a To-Do list to be marked completed if it's not empty and all the tasks in it get are completed.
+Imagine that you want a To-Do list to be marked completed if it's not empty and all the tasks in it are completed.
 
   class TodoList
     has_many :tasks,
