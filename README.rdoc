@@ -44,4 +44,4 @@ Imagine that you want a To-Do list to be marked completed if it's not empty and 
 
 
 === License
-This software is provided under the MIT License. See MIT-LICENSE for details.
+This software is available under the MIT License. See MIT-LICENSE for details.
