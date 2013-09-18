@@ -17,19 +17,19 @@ class definitions.
 === Example
 Consider the following classes:
 
-  class TodoList
+  class TodoList < ActiveRecord::Base
     # name, completed
     has_many :tasks
   end
 
-  class Task
+  class Task < ActiveRecord::Base
     # name, completed
     belongs_to :todo_list
   end
 
 Imagine that you want a To-Do list to be marked completed if it's not empty and all the tasks in it are completed.
 
-  class TodoList
+  class TodoList < ActiveRecord::Base
     has_many :tasks,
              :after_save => lambda { |todo_list, task|
                todo_list.completed = !task.completed ? false : todo_list.tasks.where(:completed => false).count == 0
