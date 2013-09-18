@@ -35,7 +35,7 @@ Imagine that you want a To-Do list to be marked completed if it's not empty and 
                todo_list.completed = !task.completed ? false : todo_list.tasks.where(:completed => false).count == 0
                todo_list.save! if todo_list.completed_changed?
              },
-             :after_destroy => lambda {
+             :after_destroy => lambda { |todo_list, task|
                todo_list.completed = (todo_list.tasks.any? and todo_list.tasks.where(:completed => false).count == 0)
                todo_list.save! if todo_list.completed_changed?
              }
