@@ -27,12 +27,16 @@ Consider the following classes:
     belongs_to :todo_list
   end
 
-Imagine that a To-Do list is completed if it's not empty and all the tasks in it get are completed.
+Imagine that you want a To-Do list to be marked completed if it's not empty and all the tasks in it get are completed.
 
   class TodoList
     has_many :tasks,
              :after_save => lambda { |todo_list, task|
-               todo_list.completed = !task.completed ? false : todo_list.tasks.map(&:completed).inject(&:&)
+               todo_list.completed = !task.completed ? false : todo_list.tasks.where(:completed => false).count == 0
+               todo_list.save! if todo_list.completed_changed?
+             },
+             :after_destroy => lambda {
+               todo_list.completed = (todo_list.tasks.any? and todo_list.tasks.where(:completed => false).count == 0)
                todo_list.save! if todo_list.completed_changed?
              }
   
