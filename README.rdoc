@@ -14,8 +14,13 @@ triggered by child objects is kept in the parent code base, where it belongs. If
 has a lot of relations, this prevents that class' code to be scattered across all the child
 class definitions.
 
-=== Example
-Consider the following classes:
+=== Usage
+
+Just add a reference to Gemfile:
+
+  gem install has_many_callbacks
+
+As an example, consider the following classes:
 
   class TodoList < ActiveRecord::Base
     # name, completed
@@ -30,7 +35,7 @@ Consider the following classes:
 Imagine that you want a To-Do list to be marked completed if it's not empty and all the tasks in it are completed.
 
   class TodoList < ActiveRecord::Base
-    has_many :tasks,
+    has_many :tasks, :inverse_of => :todo_list,
              :after_save => lambda { |todo_list, task|
                todo_list.completed = !task.completed ? false : todo_list.tasks.where(:completed => false).count == 0
                todo_list.save! if todo_list.completed_changed?
@@ -40,6 +45,30 @@ Imagine that you want a To-Do list to be marked completed if it's not empty and 
                todo_list.save! if todo_list.completed_changed?
              }
   
+  end
+
+Please note that the <tt>inverse_of</tt> option is required. Three callbacks are available, <tt>after_create</tt>,
+<tt>after_save</tt> and <tt>after_destroy</tt>.
+
+You can also pass callbacks as symbols refering to the instance methods to call:
+
+  class TodoList < ActiveRecord::Base
+    has_many :tasks,
+             :inverse_of => :todo_list,
+             :after_save => :handle_task_save,
+             :after_destroy => :handle_task_destroy
+             
+    private
+    
+    def handle_task_save(task)
+      self.completed = !task.completed ? false : tasks.where(:completed => false).count == 0
+      save! if completed_changed?
+    end
+    
+    def handle_task_destroy(task)
+      self.completed = (tasks.any? and tasks.where(:completed => false).count == 0)
+      save! if completed_changed?
+    end
   end
 
 
