@@ -18,7 +18,7 @@ class definitions.
 
 Just add a reference to Gemfile:
 
-  gem install has_many_callbacks
+  gem install "has_many_callbacks"
 
 As an example, consider the following classes:
 
