@@ -1,6 +1,43 @@
 require 'spec_helper'
 
 describe HasManyCallbacks do
+  shared_examples 'executes after create callback' do |options|
+    test_mod = options[:when_calling]
+
+    it "should trigger execution of after_create callback on direct association when passing #{test_mod.to_s.underscore.humanize.downcase}" do
+      @library = test_mod::Library.create(:name => 'National Library')
+      @book = test_mod::Book.create(:title => '1984')
+      lambda {
+        test_mod::BookInventoryEntry.create(:book => @book, :library => @library)
+      }.should change { @library.reload.inventory_count }.from(0).to(1)
+    end
+
+    it "should trigger execution of after_create callback on :through associations when passing #{test_mod.to_s.underscore.humanize.downcase}" do
+      @library = test_mod::Library.create(:name => 'National Library')
+
+      lambda {
+        @book = test_mod::Book.create(:title => '1984', :award_count => 2, :libraries => [@library])
+      }.should change { @library.reload.award_count }.from(0).to(2)
+    end
+
+    it "should trigger execution of after_create callback if inverse is also collection when passing #{test_mod.to_s.underscore.humanize.downcase}" do
+      @library1 = test_mod::Library.create(:name => 'National Library')
+      @library2 = test_mod::Library.create(:name => 'International Library')
+
+      lambda {
+        test_mod::Book.create(:title => '1984', :award_count => 3, :libraries => [@library1, @library2])
+      }.should change { [@library1.reload.award_count, @library2.reload.award_count] }.from([0, 0]).to([3, 3])
+    end
+
+    it "should not fail when child model instance is not referencing parent" do
+      @book = test_mod::Book.create(:title => '1984')
+      lambda {
+        @book_inventory_entry = test_mod::BookInventoryEntry.create(:book => @book)
+        @book.save!
+      }.should_not raise_exception
+    end
+  end
+
   shared_examples 'executes after save callback' do |options|
     test_mod = options[:when_calling]
 
@@ -36,6 +73,14 @@ describe HasManyCallbacks do
         @book.update_attributes(:award_count => 3)
       }.should change { [@library1.reload.award_count, @library2.reload.award_count] }.from([0, 0]).to([3, 3])
     end
+
+    it "should not fail when child model instance is not referencing parent" do
+      @book = test_mod::Book.create(:title => '1984')
+      lambda {
+        @book_inventory_entry = test_mod::BookInventoryEntry.create(:book => @book)
+        @book.save!
+      }.should_not raise_exception
+    end
   end
 
   shared_examples "executes after destroy callback" do |options|
@@ -55,7 +100,17 @@ describe HasManyCallbacks do
         test_mod::BookInventoryEntry.where(:book_id => @book.id, :library_id => @library.id).first.destroy
       }.should change { @library.reload.inventory_count }.from(1).to(0)
     end
+
+    it "should not fail when child model instance is not referencing parent" do
+      lambda {
+        @book_inventory_entry = test_mod::BookInventoryEntry.create(:book => @book)
+        @book.save!
+      }.should_not raise_exception
+    end
   end
+
+  it_behaves_like 'executes after create callback',
+                  :when_calling => AfterCreateWithProc
 
   it_behaves_like 'executes after save callback',
                   :when_calling => AfterSaveWithProc

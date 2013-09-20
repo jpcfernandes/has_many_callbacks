@@ -3,8 +3,9 @@ module HasManyCallbacks
   extend ActiveSupport::Concern
 
   class HasManyWithChildCallbacksBuilder < ActiveRecord::Associations::Builder::HasMany
+    HAS_MANY_CALLBACKS = [ :after_create, :after_save, :after_destroy ]
     def valid_options
-      super + [ :after_save, :after_destroy ]
+      super + HAS_MANY_CALLBACKS
     end
 
     def build
@@ -40,7 +41,7 @@ module HasManyCallbacks
         association.klass.instance_eval code
       end
 
-      [:after_save, :after_destroy].each do |callback|
+      HAS_MANY_CALLBACKS.each do |callback|
         if options[callback].present?
           hook_callback[callback]
           #puts "#{model.to_s}: hooking #{callback} on #{association.try(:name)}"
