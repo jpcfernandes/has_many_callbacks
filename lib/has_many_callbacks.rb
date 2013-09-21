@@ -4,6 +4,10 @@ module HasManyCallbacks
 
   class HasManyWithChildCallbacksBuilder < ActiveRecord::Associations::Builder::HasMany
     HAS_MANY_CALLBACKS = [ :after_create, :after_save, :after_destroy ]
+    def self.valid_options
+      super + HAS_MANY_CALLBACKS
+    end
+
     def valid_options
       super + HAS_MANY_CALLBACKS
     end
@@ -27,7 +31,7 @@ module HasManyCallbacks
         end
 
         code = %{
-          #{callback_name} do |obj|
+        #{callback_name} do |obj|
             association = obj.class.reflect_on_association(:#{association.inverse_of.name})
             inverse_association = association.klass.reflect_on_association(:#{association.name})
             callback_option = inverse_association.options[:#{callback_name}]
@@ -54,13 +58,24 @@ module HasManyCallbacks
     end
   end
 
+
   module ClassMethods
+  end
+
+  module ClassMethodsV4
     def has_many(name, scope = nil, options = {}, &extension)
       HasManyWithChildCallbacksBuilder.build(self, name, scope, options, &extension)
     end
   end
 
+  module ClassMethodsV3
+    def has_many(name, options = {}, &extension)
+      HasManyWithChildCallbacksBuilder.build(self, name, options, &extension)
+    end
+  end
 end
 
+module_to_include = ((Rails.version.split('.').first) || 4).to_i == 4 ?
+  HasManyCallbacks::ClassMethodsV4 : HasManyCallbacks::ClassMethodsV3
+HasManyCallbacks::ClassMethods.send(:include, module_to_include)
 ActiveRecord::Base.send(:include, HasManyCallbacks)
-ActiveRecord::Base.send(:include, HasManyCallbacks::ClassMethods)
